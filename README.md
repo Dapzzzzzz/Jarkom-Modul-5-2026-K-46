@@ -2,8 +2,8 @@
 
 | 	Nama              	| NRP        | Pembagian Pengerjaaan  |
 | ---------------------	| ---------- | ---------------------- |
-| Hendra Manudinata 	| 5027251051 | -                      |
-| Daffa Rifqi As Shidiq	| 5027251038 | -                      |
+| Hendra Manudinata 	| 5027251051 | Babak 1 (soal 1-8) dan Babak 3 (soal 13-19) |
+| Daffa Rifqi As Shidiq	| 5027251038 | Babak 2 (soal 9-12) |
 
 * Kelompok: K-46
 * Prefix IP: 192.234.x.x
