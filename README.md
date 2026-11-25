@@ -539,3 +539,113 @@ Counter tidak berubah saat Armisael ping Lilith, sehingga traffic antar-LAN tida
 
 <!-- TODO: tambahkan screenshot ping dan counter NAT dari GNS3 -->
 
+
+## Soal 5
+**Pintu depan dikunci rapat:** Kaji memperingatkan Kaworu bahwa SEELE cukup mengetuk pintu depan. Gendo mengunci NAT1: boleh keluar, tidak boleh dimasuki. Di Gendo, ubah policy INPUT dan FORWARD menjadi DROP. Lalu izinkan empat hal: (a) balasan koneksi yang sudah ada, (b) traffic dari jaringan internal ke internet, (c) traffic antar-LAN, dan (d) traffic dari jaringan internal ke Gendo sendiri. Loopback dan DHCP dari NAT1 juga harus tetap jalan. Koneksi baru dari sisi NAT1 tidak boleh masuk. Soal 2 sampai 4 harus tetap jalan, dan semuanya ditulis di `gendo.sh`. Tunjukkan `iptables -S` di Gendo, dan buktikan ping 8.8.8.8 dari Armisael masih berhasil.
+
+### Jawaban dan Penjelasan
+
+Seluruh konfigurasi Gendou (soal 2 sampai 5) digabung menjadi satu script `/root/gendo.sh` (`perquest-scripts/soal_5/gendo.sh`). Urutannya:
+
+1. **Soal 2 + 3:** menulis `/etc/network/interfaces` berisi IP tiap interface dan rute statis, lalu menerapkannya langsung.
+2. **Soal 4:** rule MASQUERADE.
+3. **Soal 5:** firewall.
+4. Menyimpan semua rule iptables ke `/etc/iptables.rules`.
+
+Script diawali dengan flush chain (`-F`) sebelum menambah rule, sehingga aman dijalankan berulang tanpa rule dobel.
+
+#### 1. Firewall
+
+```bash
+INTERNAL=192.234.0.0/16
+
+iptables -F INPUT
+iptables -F FORWARD
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+
+# Loopback
+iptables -A INPUT -i lo -j ACCEPT
+# (a) balasan koneksi yang sudah ada
+iptables -A INPUT   -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# DHCP dari NAT1 (server 67 -> client 68)
+iptables -A INPUT -i eth0 -p udp --sport 67 --dport 68 -j ACCEPT
+# (d) jaringan internal ke Gendou sendiri
+iptables -A INPUT ! -i eth0 -s $INTERNAL -j ACCEPT
+# (b) jaringan internal ke internet
+iptables -A FORWARD ! -i eth0 -s $INTERNAL -o eth0 -j ACCEPT
+# (c) antar-LAN
+iptables -A FORWARD ! -i eth0 -s $INTERNAL ! -o eth0 -d $INTERNAL -j ACCEPT
+```
+
+| Rule | Kebutuhan | Penjelasan |
+|---|---|---|
+| `-P INPUT DROP`, `-P FORWARD DROP` | Kunci default | Semua paket yang tidak cocok dengan rule di bawah dibuang. `OUTPUT` tetap `ACCEPT` agar Gendou sendiri bisa keluar. |
+| `-i lo` | Loopback | Komunikasi lokal Gendou tidak terblokir. |
+| `--ctstate ESTABLISHED,RELATED` | (a) | Balasan dari koneksi yang dimulai dari dalam (termasuk balasan dari internet yang sudah di-NAT) boleh masuk. |
+| `-i eth0 -p udp --sport 67 --dport 68` | DHCP NAT1 | Balasan DHCP dari NAT1 tetap diterima agar `eth0` bisa memperpanjang lease. |
+| `INPUT ! -i eth0 -s 192.234.0.0/16` | (d) | Jaringan internal boleh mengakses Gendou. `! -i eth0` mencegah paket palsu ber-alamat internal yang datang dari NAT1. |
+| `FORWARD ! -i eth0 -s 192.234.0.0/16 -o eth0` | (b) | Jaringan internal boleh keluar ke internet. |
+| `FORWARD ! -i eth0 -s 192.234.0.0/16 ! -o eth0 -d 192.234.0.0/16` | (c) | Traffic antar-LAN yang lewat Gendou boleh diteruskan. |
+
+Koneksi baru dari sisi NAT1 tidak cocok dengan rule mana pun: bukan balasan, bukan DHCP, dan masuk dari `eth0`. Akibatnya paket tersebut jatuh ke policy `DROP`.
+
+#### 2. Persistensi
+
+Rule disimpan dengan `iptables-save > /etc/iptables.rules`. Stanza `eth0` di `/etc/network/interfaces` memulihkannya setiap kali `eth0` naik:
+
+```bash
+auto eth0
+iface eth0 inet dhcp
+    up sysctl -w net.ipv4.ip_forward=1
+    up iptables-restore < /etc/iptables.rules   # soal 4-5
+```
+
+Baris ini menggantikan baris `up iptables -t nat ...` dari soal 4, karena `/etc/iptables.rules` sudah memuat rule MASQUERADE.
+
+### Verifikasi
+
+#### 1. `iptables -S` di `Gendou`
+
+```
+-P INPUT DROP
+-P FORWARD DROP
+-P OUTPUT ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i eth0 -p udp -m udp --sport 67 --dport 68 -j ACCEPT
+-A INPUT -s 192.234.0.0/16 ! -i eth0 -j ACCEPT
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -s 192.234.0.0/16 ! -i eth0 -o eth0 -j ACCEPT
+-A FORWARD -s 192.234.0.0/16 -d 192.234.0.0/16 ! -i eth0 ! -o eth0 -j ACCEPT
+```
+
+```
+$ iptables -t nat -S POSTROUTING
+-P POSTROUTING ACCEPT
+-A POSTROUTING -s 192.234.0.0/16 -o eth0 -j MASQUERADE
+```
+
+#### 2. Soal 2 sampai 4 tetap jalan
+
+| Uji | Hasil |
+|---|---|
+| `udhcpc` di `eth0` Gendou | Lease `192.168.122.172` dari `192.168.122.1` diperoleh (DHCP tetap jalan) |
+| Armisael `ping 8.8.8.8` | 3/3 diterima, 0% loss (internet, rule b) |
+| Armisael `ping deb.debian.org` | 3/3 diterima, 0% loss (DNS + internet) |
+| Armisael `ping 192.234.4.74` (Lilith) | 3/3 diterima, 0% loss (antar-LAN, rule c) |
+| Armisael `ping 192.234.4.105` (Gendou) | 2/2 diterima, 0% loss (internal ke Gendou, rule d) |
+| Gendou `ping 8.8.8.8` | 2/2 diterima, 0% loss (balasan diterima, rule a) |
+
+Counter `FORWARD` setelah pengujian menunjukkan setiap rule terpakai:
+
+```
+Chain FORWARD (policy DROP 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+   21  2101 ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+    6   445 ACCEPT     all  --  !eth0  eth0    192.234.0.0/16       0.0.0.0/0
+    9   756 ACCEPT     all  --  !eth0  !eth0   192.234.0.0/16       192.234.0.0/16
+```
+
+<!-- TODO: tambahkan screenshot iptables -S di Gendou dan ping 8.8.8.8 dari Armisael -->
