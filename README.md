@@ -915,3 +915,117 @@ listening on [any] 5000 ...
 Setiap pesan tercatat dari `192.234.4.74` (Lilith). Baris `listening on` kedua menunjukkan listener langsung siap menerima koneksi berikutnya.
 
 <!-- TODO: tambahkan screenshot pengiriman dari Lilith dan log di tiap MAGI -->
+
+## Soal 8
+**Mengenali kondisi normal:** Pen-Pen dan Tokyo3-Core sudah ditandai sebagai calon sasaran pertama SEELE. Sebelum dilindungi, keduanya harus melayani dulu agar kamu tahu kondisi normalnya. Koneksi ke port 80 dijawab `Welcome to {hostname}`. Koneksi ke port 8080 di Tokyo3-Core dijawab `syifa imutz`. Tunjukkan nc dari Lilith ke ketiga port itu. Tunjukkan juga bahwa port yang tidak dilayani, misalnya 22, langsung gagal, bukan menggantung.
+
+### Jawaban dan Penjelasan
+
+| Node | IP | Port TCP | Balasan |
+|---|---|---|---|
+| Pen-Pen | `192.234.3.195` | 80 | `Welcome to Pen-Pen` |
+| Tokyo3-Core | `192.234.4.106` | 80 | `Welcome to Tokyo3-Core` |
+| Tokyo3-Core | `192.234.4.106` | 8080 | `syifa imutz` |
+
+#### 1. Layanan di `Pen-Pen` dan `Tokyo3-Core`
+
+Kedua node memakai Alpine dengan `nc` versi OpenBSD.
+
+```bash
+serve() {
+    port=$1; reply=$2
+    pkill -f "nc-service-$port" 2>/dev/null
+    pkill -f "nc -v -n -l -N $port" 2>/dev/null
+    : > /root/nc_$port.log
+    setsid sh -c "while true; do echo \"$reply\" | nc -v -n -l -N $port >> /root/nc_$port.log 2>&1; done # nc-service-$port" \
+        < /dev/null > /dev/null 2>&1 &
+}
+serve 80 "Welcome to $(hostname)"
+serve 8080 "syifa imutz"   # hanya di Tokyo3-Core
+```
+
+* **`echo ... | nc -l <port>`** mengirim balasan ke setiap klien yang terhubung.
+* **`$(hostname)`** diisi saat script dijalankan, sehingga balasannya `Welcome to Pen-Pen` atau `Welcome to Tokyo3-Core`.
+* **`-N`** menutup koneksi setelah balasan terkirim, sehingga klien tidak menggantung menunggu data lain.
+* **`while true`**: `nc` berhenti setelah satu koneksi, jadi listener dijalankan ulang dalam loop.
+* **`setsid ... &`** melepas loop dari sesi console, dan **`pkill`** di awal membuat script aman dijalankan berulang.
+* **`-v -n`** mencatat IP klien di `/root/nc_<port>.log`.
+
+#### 2. Port yang tidak dilayani
+
+Port 22 tidak perlu dikonfigurasi. Tidak ada proses yang listen di port itu dan belum ada firewall di kedua node. Kernel langsung membalas SYN dengan TCP RST, sehingga klien langsung mendapat `Connection refused`.
+
+#### 3. Pengujian dari `Lilith`
+
+```bash
+probe() {
+    start=$(date +%s%N)
+    out=$(nc -v -n -w 5 $1 $2 < /dev/null 2>&1)
+    rc=$?
+    ms=$(( ($(date +%s%N) - start) / 1000000 ))
+    echo "== $1:$2 exit=$rc durasi=${ms}ms"
+    echo "$out"
+}
+```
+
+`-w 5` membatasi waktu tunggu 5 detik. Jika port menggantung, durasinya akan mendekati 5000 ms. Exit code dan durasi menjadi bukti apakah koneksi berhasil, ditolak, atau menggantung.
+
+Script lengkap ada di `perquest-scripts/soal_8/` dan dijalankan di node sebagai `/root/soal_8.sh`.
+
+### Verifikasi
+
+#### 1. `nc` dari `Lilith`
+
+```
+== 192.234.3.195:80 exit=0 durasi=5ms
+Connection to 192.234.3.195 80 port [tcp/*] succeeded!
+Welcome to Pen-Pen
+== 192.234.4.106:80 exit=0 durasi=5ms
+Connection to 192.234.4.106 80 port [tcp/*] succeeded!
+Welcome to Tokyo3-Core
+== 192.234.4.106:8080 exit=0 durasi=6ms
+Connection to 192.234.4.106 8080 port [tcp/*] succeeded!
+syifa imutz
+== 192.234.3.195:22 exit=1 durasi=3ms
+nc: connect to 192.234.3.195 port 22 (tcp) failed: Connection refused
+== 192.234.4.106:22 exit=1 durasi=4ms
+nc: connect to 192.234.4.106 port 22 (tcp) failed: Connection refused
+```
+
+| Tujuan | Exit code | Durasi | Hasil |
+|---|---|---|---|
+| Pen-Pen:80 | 0 | 5 ms | `Welcome to Pen-Pen` |
+| Tokyo3-Core:80 | 0 | 5 ms | `Welcome to Tokyo3-Core` |
+| Tokyo3-Core:8080 | 0 | 6 ms | `syifa imutz` |
+| Pen-Pen:22 | 1 | 3 ms | `Connection refused`, langsung gagal |
+| Tokyo3-Core:22 | 1 | 4 ms | `Connection refused`, langsung gagal |
+
+Port 22 gagal dalam 3 sampai 4 ms, jauh di bawah batas 5000 ms, jadi koneksi langsung ditolak dan tidak menggantung.
+
+#### 2. Log di server
+
+**Pen-Pen** (`/root/nc_80.log`):
+
+```
+Listening on 0.0.0.0 80
+Connection received on 192.234.4.74 56364
+Listening on 0.0.0.0 80
+```
+
+**Tokyo3-Core** (`/root/nc_80.log` dan `/root/nc_8080.log`):
+
+```
+Listening on 0.0.0.0 80
+Connection received on 192.234.4.74 42384
+Listening on 0.0.0.0 80
+```
+
+```
+Listening on 0.0.0.0 8080
+Connection received on 192.234.4.74 49108
+Listening on 0.0.0.0 8080
+```
+
+Setiap koneksi tercatat dari `192.234.4.74` (Lilith), dan listener langsung siap lagi untuk koneksi berikutnya.
+
+<!-- TODO: tambahkan screenshot nc dari Lilith ke port 80, 8080, dan 22 -->
