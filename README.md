@@ -649,3 +649,138 @@ Chain FORWARD (policy DROP 0 packets, 0 bytes)
 ```
 
 <!-- TODO: tambahkan screenshot iptables -S di Gendou dan ping 8.8.8.8 dari Armisael -->
+
+## Soal 6
+**Alamat para pilot:** jaringan sudah hidup, tapi para pilot dan staf tidak tahu alamat mereka sendiri. Unit-01 bahkan tidak tahu siapa gateway-nya. Beri IP statis dan gateway ke semua node non-router, sesuai aturan alamat di glosarium. Simpan agar bertahan setelah restart. Tunjukkan `ip -br` dan ping ke gateway di Unit-01.
+
+### Jawaban dan Penjelasan
+
+Sesuai glosarium, gateway adalah IP usable pertama subnet. Node di switch mendapat IP usable berikutnya sesuai urutan nama di gambar, dari kiri ke kanan. Alamat setiap node diambil dari `subnetting/ip-node.csv` (soal 1).
+
+Setiap node non-router menjalankan script yang sama polanya. Contoh untuk `Unit-01`:
+
+```bash
+cat > /etc/network/interfaces <<'EOF'
+auto lo
+iface lo inet loopback
+
+# Switch-Cage
+auto eth0
+iface eth0 inet static
+    address 192.234.4.66
+    netmask 255.255.255.248
+    gateway 192.234.4.65
+    up echo "nameserver 8.8.8.8" > /etc/resolv.conf
+EOF
+
+# Terapkan sekarang
+ip addr flush dev eth0
+ip addr add 192.234.4.66/29 dev eth0
+ip link set eth0 up
+ip route replace default via 192.234.4.65
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+```
+
+* **`/etc/network/interfaces`** diterapkan GNS3 setiap node start, sehingga IP, gateway, dan nameserver bertahan setelah restart.
+* **`gateway`** menjadi default route ke router di switch yang sama.
+* **`nameserver 8.8.8.8`** melanjutkan soal 4 agar node bisa me-resolve nama domain saat memasang paket.
+
+Script lengkap tiap node ada di `perquest-scripts/soal_6/<node>.sh` dan dijalankan di node sebagai `/root/soal_6.sh`.
+
+<details>
+<summary>Daftar IP statis seluruh node non-router (25 node)</summary>
+
+| Node | Switch | IP | Gateway |
+|---|---|---|---|
+| Quarters | Switch-Quarters | `192.234.0.2/23` | `192.234.0.1` |
+| Comm-Net | Switch-Comm | `192.234.2.2/24` | `192.234.2.1` |
+| Hangar-Crew | Switch-Hangar | `192.234.3.2/25` | `192.234.3.1` |
+| Sachiel | Switch-Bunker | `192.234.3.130/26` | `192.234.3.129` |
+| Medic-Bay | Switch-Medic | `192.234.3.194/27` | `192.234.3.193` |
+| Pen-Pen | Switch-Medic | `192.234.3.195/27` | `192.234.3.193` |
+| Relay-Node | Switch-Relay | `192.234.3.226/27` | `192.234.3.225` |
+| Garden-Staff | Switch-Garden | `192.234.4.2/27` | `192.234.4.1` |
+| Dock-Crew | Switch-Dock | `192.234.4.34/28` | `192.234.4.33` |
+| Entry-Plug | Switch-Lab | `192.234.4.50/29` | `192.234.4.49` |
+| Dummy-Plug | Switch-Lab | `192.234.4.51/29` | `192.234.4.49` |
+| Magi-Casper | Switch-Terminal | `192.234.4.58/29` | `192.234.4.57` |
+| Magi-Balthasar | Switch-Terminal | `192.234.4.59/29` | `192.234.4.57` |
+| Magi-Melchior | Switch-Terminal | `192.234.4.60/29` | `192.234.4.57` |
+| Unit-01 | Switch-Cage | `192.234.4.66/29` | `192.234.4.65` |
+| Unit-02 | Switch-Cage | `192.234.4.67/29` | `192.234.4.65` |
+| Unit-00 | Switch-Cage | `192.234.4.68/29` | `192.234.4.65` |
+| Lilith | Switch-Dogma | `192.234.4.74/29` | `192.234.4.73` |
+| Adam | Switch-Dogma | `192.234.4.75/29` | `192.234.4.73` |
+| Zeruel | Switch-Monolith | `192.234.4.82/29` | `192.234.4.81` |
+| Armisael | Switch-Monolith | `192.234.4.83/29` | `192.234.4.81` |
+| Radar-Array | Switch-Radar | `192.234.4.90/29` | `192.234.4.89` |
+| Archive-Vault | Switch-Archive | `192.234.4.98/30` | `192.234.4.97` |
+| Spy | Switch-Intel | `192.234.4.102/30` | `192.234.4.101` |
+| Tokyo3-Core | Switch-Cmd | `192.234.4.106/30` | `192.234.4.105` |
+
+</details>
+
+### Verifikasi
+
+#### 1. `ip -br` dan ping ke gateway di `Unit-01`
+
+```
+$ ip -br addr
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+eth0             UNKNOWN        192.234.4.66/29
+eth1             UNKNOWN        fe80::42:36ff:fe4f:4d01/64
+eth2             UNKNOWN        fe80::42:36ff:fe4f:4d02/64
+eth3             UNKNOWN        fe80::42:36ff:fe4f:4d03/64
+
+$ ping -c 3 192.234.4.65
+PING 192.234.4.65 (192.234.4.65) 56(84) bytes of data.
+64 bytes from 192.234.4.65: icmp_seq=1 ttl=64 time=0.306 ms
+64 bytes from 192.234.4.65: icmp_seq=2 ttl=64 time=0.484 ms
+64 bytes from 192.234.4.65: icmp_seq=3 ttl=64 time=0.519 ms
+
+--- 192.234.4.65 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2085ms
+```
+
+`eth0` Unit-01 memakai `192.234.4.66/29`, dan gateway Misato (`192.234.4.65`) menjawab ping.
+
+#### 2. Seluruh node non-router
+
+Setiap node diperiksa dengan `ip -4 -br addr show eth0` dan `ping -c 3 <gateway>`.
+
+<details>
+<summary>Hasil ping ke gateway (25/25 berhasil)</summary>
+
+```
+Quarters        192.234.0.2/23     gw 192.234.0.1    recv 3/3
+Comm-Net        192.234.2.2/24     gw 192.234.2.1    recv 3/3
+Hangar-Crew     192.234.3.2/25     gw 192.234.3.1    recv 3/3
+Sachiel         192.234.3.130/26   gw 192.234.3.129  recv 3/3
+Medic-Bay       192.234.3.194/27   gw 192.234.3.193  recv 3/3
+Pen-Pen         192.234.3.195/27   gw 192.234.3.193  recv 3/3
+Relay-Node      192.234.3.226/27   gw 192.234.3.225  recv 3/3
+Garden-Staff    192.234.4.2/27     gw 192.234.4.1    recv 3/3
+Dock-Crew       192.234.4.34/28    gw 192.234.4.33   recv 3/3
+Entry-Plug      192.234.4.50/29    gw 192.234.4.49   recv 3/3
+Dummy-Plug      192.234.4.51/29    gw 192.234.4.49   recv 3/3
+Magi-Casper     192.234.4.58/29    gw 192.234.4.57   recv 3/3
+Magi-Balthasar  192.234.4.59/29    gw 192.234.4.57   recv 3/3
+Magi-Melchior   192.234.4.60/29    gw 192.234.4.57   recv 3/3
+Unit-01         192.234.4.66/29    gw 192.234.4.65   recv 3/3
+Unit-02         192.234.4.67/29    gw 192.234.4.65   recv 3/3
+Unit-00         192.234.4.68/29    gw 192.234.4.65   recv 3/3
+Lilith          192.234.4.74/29    gw 192.234.4.73   recv 3/3
+Adam            192.234.4.75/29    gw 192.234.4.73   recv 3/3
+Zeruel          192.234.4.82/29    gw 192.234.4.81   recv 3/3
+Armisael        192.234.4.83/29    gw 192.234.4.81   recv 3/3
+Radar-Array     192.234.4.90/29    gw 192.234.4.89   recv 3/3
+Archive-Vault   192.234.4.98/30    gw 192.234.4.97   recv 3/3
+Spy             192.234.4.102/30   gw 192.234.4.101  recv 3/3
+Tokyo3-Core     192.234.4.106/30   gw 192.234.4.105  recv 3/3
+```
+
+</details>
+
+Delapan router (Asuka, Kaji, Kaworu, Makoto, Mari, Maya, Ritsuko, Shinji) sempat berstatus stopped di GNS3. Setelah dinyalakan ulang, IP dan rute dari soal 2 dan 3 langsung aktif kembali tanpa konfigurasi ulang. Ini membuktikan konfigurasi di `/etc/network/interfaces` bertahan setelah restart.
+
+<!-- TODO: tambahkan screenshot ip -br dan ping ke gateway di Unit-01 -->
