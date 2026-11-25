@@ -452,3 +452,90 @@ Ketiga ping berhasil, sehingga routing statis dari cabang Shigeru ke cabang Fuyu
 
 <!-- TODO: tambahkan screenshot ip route dan ping dari GNS3 -->
 
+
+## Soal 4
+**Haus kabar dari dunia luar:** Maya melapor bahwa semua sistem butuh update dari luar, padahal pintu keluarnya hanya Gendo. IP dari NAT1 juga bisa berganti kapan saja. Beri seluruh jaringan akses internet lewat Gendo. Konfigurasinya tidak boleh perlu diubah saat IP NAT1 berganti. Hanya traffic dari prefix internal yang keluar lewat NAT1 yang boleh diterjemahkan alamatnya, sedangkan traffic antar-LAN harus tetap membawa alamat asli pengirimnya. Node yang nanti memasang paket juga harus bisa me-resolve nama domain. Selesaikan sebelum node lain memasang paket. Buktikan ping 8.8.8.8 dan ping `deb.debian.org` dari Armisael dan Lilith berhasil, dan tunjukkan counter rule NAT.
+
+### Jawaban dan Penjelasan
+
+#### 1. NAT di `Gendou`
+
+```bash
+iptables -t nat -C POSTROUTING -s 192.234.0.0/16 -o eth0 -j MASQUERADE 2>/dev/null ||
+    iptables -t nat -A POSTROUTING -s 192.234.0.0/16 -o eth0 -j MASQUERADE
+```
+
+Setiap bagian rule punya alasan:
+
+* **`MASQUERADE`**, bukan `SNAT --to-source`. MASQUERADE selalu memakai IP `eth0` yang sedang aktif, sehingga rule tidak perlu diubah walaupun IP dari DHCP NAT1 berganti. SNAT harus menuliskan IP secara eksplisit.
+* **`-s 192.234.0.0/16`** membatasi agar hanya alamat dari prefix internal yang diterjemahkan.
+* **`-o eth0`** membatasi agar hanya paket yang keluar ke NAT1 yang diterjemahkan. Traffic antar-LAN keluar lewat `eth1` sampai `eth8`, sehingga tidak tersentuh rule ini dan tetap membawa alamat asli pengirimnya.
+* **`-C ... || -A ...`** memeriksa dulu apakah rule sudah ada, sehingga script aman dijalankan berulang tanpa membuat rule dobel.
+
+Agar bertahan setelah restart, rule yang sama ditambahkan ke stanza `eth0` di `/etc/network/interfaces`:
+
+```bash
+auto eth0
+iface eth0 inet dhcp
+    up sysctl -w net.ipv4.ip_forward=1
+    up iptables -t nat -C POSTROUTING -s 192.234.0.0/16 -o eth0 -j MASQUERADE 2>/dev/null || iptables -t nat -A POSTROUTING -s 192.234.0.0/16 -o eth0 -j MASQUERADE
+```
+
+#### 2. DNS
+
+* **Gendou** memakai nameserver dari DHCP NAT1 (`192.168.122.1`), yang diperbarui otomatis oleh `udhcpc`.
+* **Router lain** memakai nameserver `8.8.8.8`. Server ini dijangkau lewat NAT di Gendou, sehingga tidak bergantung pada alamat NAT1 yang bisa berganti.
+
+```bash
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+```
+
+Agar bertahan setelah restart, baris berikut ditambahkan ke stanza `eth0` di `/etc/network/interfaces` setiap router:
+
+```bash
+    up echo "nameserver 8.8.8.8" > /etc/resolv.conf
+```
+
+Semua router sudah bisa me-resolve `deb.debian.org` sebelum memasang paket. Node non-router mendapat nameserver permanen pada soal 6. Untuk node uji Armisael dan Lilith, nameserver dipasang sementara dengan perintah yang sama.
+
+Script lengkap tiap node ada di `perquest-scripts/soal_4/<node>.sh` dan dijalankan di node sebagai `/root/soal_4.sh`.
+
+### Verifikasi
+
+#### 1. Ping dari `Armisael` dan `Lilith`
+
+```bash
+ping -c 3 8.8.8.8
+ping -c 3 deb.debian.org
+```
+
+| Node | `ping 8.8.8.8` | `ping deb.debian.org` |
+|---|---|---|
+| Armisael | 3/3 diterima, 0% loss | 3/3 diterima, 0% loss |
+| Lilith | 3/3 diterima, 0% loss | 3/3 diterima, 0% loss |
+
+Ping ke `deb.debian.org` berhasil, artinya nama domain berhasil di-resolve dan paket keluar ke internet lewat NAT di Gendou.
+
+#### 2. Counter Rule NAT di `Gendou`
+
+```bash
+iptables -t nat -L POSTROUTING -v -n -x
+```
+
+Counter pada tabel `nat` hanya bertambah satu kali untuk setiap koneksi baru, bukan untuk setiap paket, karena paket berikutnya dalam koneksi yang sama ditangani oleh conntrack. Pengujian dilakukan dengan membaca counter sebelum dan sesudah dua jenis ping dari Armisael:
+
+| Langkah | Counter (pkts / bytes) |
+|---|---|
+| Sebelum pengujian | `40 / 2684` |
+| Setelah `ping -c 3 192.234.4.74` (Lilith, antar-LAN) | `40 / 2684` (tidak berubah) |
+| Setelah `ping -c 3 8.8.8.8` (internet) | `41 / 2768` (bertambah 1 koneksi) |
+
+```
+pkts bytes target     prot opt in     out     source               destination
+  41  2768 MASQUERADE  all  --  *      eth0    192.234.0.0/16       0.0.0.0/0
+```
+
+Counter tidak berubah saat Armisael ping Lilith, sehingga traffic antar-LAN tidak diterjemahkan dan tetap membawa alamat asli `192.234.4.83`. Counter bertambah saat Armisael ping `8.8.8.8`, sehingga hanya traffic ke internet yang diterjemahkan.
+
+<!-- TODO: tambahkan screenshot ping dan counter NAT dari GNS3 -->
+
