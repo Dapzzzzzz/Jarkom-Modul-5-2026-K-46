@@ -258,3 +258,197 @@ Ping dijalankan dari kedua ujung setiap link. Seluruh 16 link berhasil dengan 0%
 
 <!-- TODO: tambahkan screenshot ip -br dan ping dari GNS3 -->
 
+
+## Soal 3
+**Pulau-pulau yang terpisah:** lampu mulai menyala, tapi tiap segmen masih seperti pulau terpisah. Fuyutsuki mengingatkan: bangun jalur dari Gendo ke bawah, cabang demi cabang. Hubungkan semua subnet dengan **routing statis** dan **jumlah rute sesedikit mungkin**. Router selain Gendo cukup punya satu **default route ke atas** dan rute untuk subnet di bawahnya. Gendo memakai default route ke NAT1. Subnet satu cabang yang bisa digabung tepat menjadi satu CIDR **harus diringkas**. Untuk soal 3 sampai 5, beri IP dan gateway **sementara** pada node uji. IP permanen dibuat di soal 6. Buktikan **Armisael bisa ping ke Lilith, Sachiel, dan Comm-Net**.
+
+### Jawaban dan Penjelasan
+
+#### 1. Prinsip Routing
+
+* **Router daun** (Mari, Rei, Shinji, Kaworu, Kensuke, Ritsuko, Kaji, Misato, Makoto, Maya, Toji) hanya memiliki LAN sendiri, sehingga cukup satu default route ke router di atasnya.
+* **Router cabang** (Yui, Hikari, Asuka, Shigeru, Fuyutsuki) memiliki default route ke Gendou, ditambah satu rute untuk setiap LAN milik router di bawahnya. Link ke router bawah sudah terhubung langsung, sehingga tidak perlu rute.
+* **Gendou** memakai default route ke NAT1 yang didapat dari DHCP, ditambah rute ke setiap subnet di tiap cabang yang tidak terhubung langsung.
+* **Peringkasan**: subnet satu cabang yang bersebelahan dan tepat membentuk satu blok CIDR digabung menjadi satu rute. Urutan link pada soal 1 sengaja disusun agar hal ini bisa dilakukan:
+
+| Rute ringkasan | Isi | Via |
+|---|---|---|
+| `192.234.4.112/28` | L2 Gendou-Yui, L3 Yui-Mari, L4 Yui-Rei, L5 Yui-Shinji | Yui |
+| `192.234.4.128/29` | L6 Asuka-Kensuke, L7 Asuka-Ritsuko | Asuka |
+| `192.234.4.136/29` | L8 Fuyutsuki-Maya, L9 Fuyutsuki-Toji | Fuyutsuki |
+| `192.234.4.80/28` | Switch-Monolith (`.80/29`), Switch-Radar (`.88/29`) | Shigeru |
+
+Subnet lain tidak bisa diringkas tepat. Contohnya, Garden (`4.0/27`) dan Dock (`4.32/28`) sama-sama di cabang Yui, tetapi blok gabungannya `4.0/26` ikut memuat Lab (`4.48/29`) milik cabang Asuka.
+
+Rute ditulis sebagai baris `up ip route replace ...` di `/etc/network/interfaces`, di bawah interface yang menjadi jalan keluar ke next hop. Dengan begitu rute dipasang setiap kali interface naik dan bertahan setelah restart. Script juga langsung menerapkan rute dengan `ip route replace`, yang aman dijalankan berulang tanpa membuat rute dobel.
+
+#### 2. Konfigurasi `Gendou`
+
+Gendou memiliki 20 rute statis, ditambah default route dari DHCP NAT1:
+
+<details>
+<summary>20 rute statis Gendou</summary>
+
+```bash
+# Cabang Yui (5 rute)
+ip route replace 192.234.0.0/23   via 192.234.4.114   # Quarters
+ip route replace 192.234.3.0/25   via 192.234.4.114   # Hangar
+ip route replace 192.234.4.0/27   via 192.234.4.114   # Garden
+ip route replace 192.234.4.32/28  via 192.234.4.114   # Dock
+ip route replace 192.234.4.112/28 via 192.234.4.114   # L2-L5 (ringkasan)
+
+# Cabang Hikari (3 rute)
+ip route replace 192.234.2.0/24   via 192.234.4.110   # Comm
+ip route replace 192.234.3.224/27 via 192.234.4.110   # Relay
+ip route replace 192.234.4.144/30 via 192.234.4.110   # L10 Hikari-Kaworu
+
+# Cabang Asuka (4 rute)
+ip route replace 192.234.4.96/30  via 192.234.4.154   # Archive
+ip route replace 192.234.3.128/26 via 192.234.4.154   # Bunker
+ip route replace 192.234.4.48/29  via 192.234.4.154   # Lab
+ip route replace 192.234.4.128/29 via 192.234.4.154   # L6-L7 (ringkasan)
+
+# Kaji dan Misato (1 rute masing-masing)
+ip route replace 192.234.4.100/30 via 192.234.4.158   # Intel
+ip route replace 192.234.4.64/29  via 192.234.4.162   # Cage
+
+# Cabang Shigeru (2 rute)
+ip route replace 192.234.4.80/28  via 192.234.4.166   # Monolith + Radar (ringkasan)
+ip route replace 192.234.4.148/30 via 192.234.4.166   # L11 Shigeru-Makoto
+
+# Cabang Fuyutsuki (4 rute)
+ip route replace 192.234.4.56/29  via 192.234.4.170   # Terminal
+ip route replace 192.234.3.192/27 via 192.234.4.170   # Medic
+ip route replace 192.234.4.72/29  via 192.234.4.170   # Dogma
+ip route replace 192.234.4.136/29 via 192.234.4.170   # L8-L9 (ringkasan)
+```
+
+</details>
+
+#### 3. Konfigurasi Router Cabang
+
+Sebagai contoh, `Yui` memiliki default route ke Gendou dan satu rute untuk LAN setiap router di bawahnya:
+
+```bash
+# L2 ke Gendou
+auto eth0
+iface eth0 inet static
+    address 192.234.4.114
+    netmask 255.255.255.252
+    up sysctl -w net.ipv4.ip_forward=1
+    up ip route replace default via 192.234.4.113   # Gendou
+
+# L3 ke Mari
+auto eth2
+iface eth2 inet static
+    address 192.234.4.117
+    netmask 255.255.255.252
+    up ip route replace 192.234.4.32/28 via 192.234.4.118   # Dock (Mari)
+
+# ... eth3 (Rei) dan eth4 (Shinji) mengikuti pola yang sama
+```
+
+Rute pada router cabang lainnya:
+
+| Router | Default route | Rute ke bawah |
+|---|---|---|
+| Yui | `via 192.234.4.113` | `4.32/28` via Mari, `0.0/23` via Rei, `4.0/27` via Shinji |
+| Hikari | `via 192.234.4.109` | `3.224/27` via Kaworu |
+| Asuka | `via 192.234.4.153` | `3.128/26` via Kensuke, `4.48/29` via Ritsuko |
+| Shigeru | `via 192.234.4.165` | `4.88/29` via Makoto |
+| Fuyutsuki | `via 192.234.4.169` | `3.192/27` via Maya, `4.72/29` via Toji |
+
+#### 4. Konfigurasi Router Daun
+
+Router daun cukup memiliki satu default route ke router di atasnya. Contohnya pada `Mari`:
+
+```bash
+ip route replace default via 192.234.4.117   # Yui
+```
+
+#### 5. IP Sementara Node Uji
+
+| Node | IP sementara | Gateway |
+|---|---|---|
+| Armisael | `192.234.4.83/29` | `192.234.4.81` (Shigeru) |
+| Lilith | `192.234.4.74/29` | `192.234.4.73` (Toji) |
+| Sachiel | `192.234.3.130/26` | `192.234.3.129` (Kensuke) |
+| Comm-Net | `192.234.2.2/24` | `192.234.2.1` (Hikari) |
+
+```bash
+ip addr flush dev eth0
+ip addr add 192.234.4.83/29 dev eth0
+ip link set eth0 up
+ip route replace default via 192.234.4.81
+```
+
+IP ini hanya diterapkan langsung dan tidak disimpan ke `/etc/network/interfaces`, karena IP permanen dibuat pada soal 6.
+
+Script lengkap tiap node ada di `perquest-scripts/soal_3/<node>.sh` dan dijalankan di node sebagai `/root/soal_3.sh`.
+
+### Verifikasi
+
+#### 1. Tabel Routing `Gendou`
+
+```bash
+ip route
+```
+
+<details>
+<summary>Output <code>ip route</code> di Gendou</summary>
+
+```
+default via 192.168.122.1 dev eth0 metric 161637
+192.168.122.0/24 dev eth0 proto kernel scope link src 192.168.122.172
+192.234.0.0/23 via 192.234.4.114 dev eth2
+192.234.2.0/24 via 192.234.4.110 dev eth3
+192.234.3.0/25 via 192.234.4.114 dev eth2
+192.234.3.128/26 via 192.234.4.154 dev eth4
+192.234.3.192/27 via 192.234.4.170 dev eth8
+192.234.3.224/27 via 192.234.4.110 dev eth3
+192.234.4.0/27 via 192.234.4.114 dev eth2
+192.234.4.32/28 via 192.234.4.114 dev eth2
+192.234.4.48/29 via 192.234.4.154 dev eth4
+192.234.4.56/29 via 192.234.4.170 dev eth8
+192.234.4.64/29 via 192.234.4.162 dev eth6
+192.234.4.72/29 via 192.234.4.170 dev eth8
+192.234.4.80/28 via 192.234.4.166 dev eth7
+192.234.4.96/30 via 192.234.4.154 dev eth4
+192.234.4.100/30 via 192.234.4.158 dev eth5
+192.234.4.104/30 dev eth1 proto kernel scope link src 192.234.4.105
+192.234.4.108/30 dev eth3 proto kernel scope link src 192.234.4.109
+192.234.4.112/30 dev eth2 proto kernel scope link src 192.234.4.113
+192.234.4.112/28 via 192.234.4.114 dev eth2
+192.234.4.128/29 via 192.234.4.154 dev eth4
+192.234.4.136/29 via 192.234.4.170 dev eth8
+192.234.4.144/30 via 192.234.4.110 dev eth3
+192.234.4.148/30 via 192.234.4.166 dev eth7
+192.234.4.152/30 dev eth4 proto kernel scope link src 192.234.4.153
+192.234.4.156/30 dev eth5 proto kernel scope link src 192.234.4.157
+192.234.4.160/30 dev eth6 proto kernel scope link src 192.234.4.161
+192.234.4.164/30 dev eth7 proto kernel scope link src 192.234.4.165
+192.234.4.168/30 dev eth8 proto kernel scope link src 192.234.4.169
+```
+
+</details>
+
+Rute `192.234.4.112/28` (ringkasan) dan `192.234.4.112/30` (terhubung langsung) muncul bersamaan. Kernel memilih rute dengan prefix terpanjang, sehingga paket ke Yui tetap lewat link langsung, sedangkan paket ke L3–L5 lewat rute ringkasan.
+
+#### 2. Ping dari `Armisael`
+
+```bash
+ping -c 3 192.234.4.74    # Lilith
+ping -c 3 192.234.3.130   # Sachiel
+ping -c 3 192.234.2.2     # Comm-Net
+```
+
+| Tujuan | Jalur | Hasil |
+|---|---|---|
+| Lilith `192.234.4.74` | Shigeru → Gendou → Fuyutsuki → Toji | 3/3 diterima, 0% loss |
+| Sachiel `192.234.3.130` | Shigeru → Gendou → Asuka → Kensuke | 3/3 diterima, 0% loss |
+| Comm-Net `192.234.2.2` | Shigeru → Gendou → Hikari | 3/3 diterima, 0% loss |
+
+Ketiga ping berhasil, sehingga routing statis dari cabang Shigeru ke cabang Fuyutsuki, Asuka, dan Hikari sudah benar.
+
+<!-- TODO: tambahkan screenshot ip route dan ping dari GNS3 -->
+
