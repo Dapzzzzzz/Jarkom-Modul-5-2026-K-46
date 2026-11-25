@@ -1,0 +1,75 @@
+Subnet,Node,IP,Prefix,Gateway
+Switch-Quarters,Rei (gateway),192.234.0.1,/23,-
+Switch-Quarters,Quarters (500 host),192.234.0.2,/23,192.234.0.1
+Switch-Comm,Hikari (gateway),192.234.2.1,/24,-
+Switch-Comm,Comm-Net (200 host),192.234.2.2,/24,192.234.2.1
+Switch-Hangar,Yui (gateway),192.234.3.1,/25,-
+Switch-Hangar,Hangar-Crew (100 host),192.234.3.2,/25,192.234.3.1
+Switch-Bunker,Kensuke (gateway),192.234.3.129,/26,-
+Switch-Bunker,Sachiel (55 host),192.234.3.130,/26,192.234.3.129
+Switch-Medic,Maya (gateway),192.234.3.193,/27,-
+Switch-Medic,Medic-Bay (25 host),192.234.3.194,/27,192.234.3.193
+Switch-Medic,Pen-Pen (1 host),192.234.3.195,/27,192.234.3.193
+Switch-Relay,Kaworu (gateway),192.234.3.225,/27,-
+Switch-Relay,Relay-Node (25 host),192.234.3.226,/27,192.234.3.225
+Switch-Garden,Shinji (gateway),192.234.4.1,/27,-
+Switch-Garden,Garden-Staff (14 host),192.234.4.2,/27,192.234.4.1
+Switch-Dock,Mari (gateway),192.234.4.33,/28,-
+Switch-Dock,Dock-Crew (12 host),192.234.4.34,/28,192.234.4.33
+Switch-Lab,Ritsuko (gateway),192.234.4.49,/29,-
+Switch-Lab,Entry-Plug (3 host),192.234.4.50,/29,192.234.4.49
+Switch-Lab,Dummy-Plug (2 host),192.234.4.51,/29,192.234.4.49
+Switch-Terminal,Fuyutsuki (gateway),192.234.4.57,/29,-
+Switch-Terminal,Magi-Casper (1 host),192.234.4.58,/29,192.234.4.57
+Switch-Terminal,Magi-Balthasar (1 host),192.234.4.59,/29,192.234.4.57
+Switch-Terminal,Magi-Melchior (1 host),192.234.4.60,/29,192.234.4.57
+Switch-Cage,Misato (gateway),192.234.4.65,/29,-
+Switch-Cage,Unit-01 (1 host),192.234.4.66,/29,192.234.4.65
+Switch-Cage,Unit-02 (1 host),192.234.4.67,/29,192.234.4.65
+Switch-Cage,Unit-00 (1 host),192.234.4.68,/29,192.234.4.65
+Switch-Dogma,Toji (gateway),192.234.4.73,/29,-
+Switch-Dogma,Lilith (1 host),192.234.4.74,/29,192.234.4.73
+Switch-Dogma,Adam (1 host),192.234.4.75,/29,192.234.4.73
+Switch-Monolith,Shigeru (gateway),192.234.4.81,/29,-
+Switch-Monolith,Zeruel (1 host),192.234.4.82,/29,192.234.4.81
+Switch-Monolith,Armisael (1 host),192.234.4.83,/29,192.234.4.81
+Switch-Radar,Makoto (gateway),192.234.4.89,/29,-
+Switch-Radar,Radar-Array (4 host),192.234.4.90,/29,192.234.4.89
+Switch-Archive,Asuka (gateway),192.234.4.97,/30,-
+Switch-Archive,Archive-Vault (1 host),192.234.4.98,/30,192.234.4.97
+Switch-Intel,Kaji (gateway),192.234.4.101,/30,-
+Switch-Intel,Spy (1 host),192.234.4.102,/30,192.234.4.101
+Switch-Cmd,Gendou (gateway),192.234.4.105,/30,-
+Switch-Cmd,Tokyo3-Core (1 host),192.234.4.106,/30,192.234.4.105
+L1 Gendou-Hikari,Gendou,192.234.4.109,/30,-
+L1 Gendou-Hikari,Hikari,192.234.4.110,/30,192.234.4.109
+L2 Gendou-Yui,Gendou,192.234.4.113,/30,-
+L2 Gendou-Yui,Yui,192.234.4.114,/30,192.234.4.113
+L3 Yui-Mari,Yui,192.234.4.117,/30,-
+L3 Yui-Mari,Mari,192.234.4.118,/30,192.234.4.117
+L4 Yui-Rei,Yui,192.234.4.121,/30,-
+L4 Yui-Rei,Rei,192.234.4.122,/30,192.234.4.121
+L5 Yui-Shinji,Yui,192.234.4.125,/30,-
+L5 Yui-Shinji,Shinji,192.234.4.126,/30,192.234.4.125
+L6 Asuka-Kensuke,Asuka,192.234.4.129,/30,-
+L6 Asuka-Kensuke,Kensuke,192.234.4.130,/30,192.234.4.129
+L7 Asuka-Ritsuko,Asuka,192.234.4.133,/30,-
+L7 Asuka-Ritsuko,Ritsuko,192.234.4.134,/30,192.234.4.133
+L8 Fuyutsuki-Maya,Fuyutsuki,192.234.4.137,/30,-
+L8 Fuyutsuki-Maya,Maya,192.234.4.138,/30,192.234.4.137
+L9 Fuyutsuki-Toji,Fuyutsuki,192.234.4.141,/30,-
+L9 Fuyutsuki-Toji,Toji,192.234.4.142,/30,192.234.4.141
+L10 Hikari-Kaworu,Hikari,192.234.4.145,/30,-
+L10 Hikari-Kaworu,Kaworu,192.234.4.146,/30,192.234.4.145
+L11 Shigeru-Makoto,Shigeru,192.234.4.149,/30,-
+L11 Shigeru-Makoto,Makoto,192.234.4.150,/30,192.234.4.149
+L12 Gendou-Asuka,Gendou,192.234.4.153,/30,-
+L12 Gendou-Asuka,Asuka,192.234.4.154,/30,192.234.4.153
+L13 Gendou-Kaji,Gendou,192.234.4.157,/30,-
+L13 Gendou-Kaji,Kaji,192.234.4.158,/30,192.234.4.157
+L14 Gendou-Misato,Gendou,192.234.4.161,/30,-
+L14 Gendou-Misato,Misato,192.234.4.162,/30,192.234.4.161
+L15 Gendou-Shigeru,Gendou,192.234.4.165,/30,-
+L15 Gendou-Shigeru,Shigeru,192.234.4.166,/30,192.234.4.165
+L16 Gendou-Fuyutsuki,Gendou,192.234.4.169,/30,-
+L16 Gendou-Fuyutsuki,Fuyutsuki,192.234.4.170,/30,192.234.4.169

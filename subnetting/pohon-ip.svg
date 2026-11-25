@@ -1,0 +1,271 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1940" height="1068" font-family="DejaVu Sans, Arial, sans-serif" font-size="11">
+<rect width="1940" height="1068" fill="#fff"/>
+<text x="20" y="22" font-size="15" font-weight="bold">Pohon VLSM K-46 — 192.234.0.0/21 (merah: jalur Dummy-Plug ke Armisael)</text>
+<path d="M150,492.5625 H170 V78.1875 H195" fill="none" stroke="#999"/>
+<path d="M325,78.1875 H345 V53.0 H370" fill="none" stroke="#999"/>
+<rect x="370" y="43.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="375" y="57.0">192.234.0.0/23</text>
+<text x="506" y="57.0" fill="#000" font-weight="normal">Switch-Quarters</text>
+<path d="M325,78.1875 H345 V103.375 H370" fill="none" stroke="#999"/>
+<path d="M500,103.375 H520 V79.0 H545" fill="none" stroke="#999"/>
+<rect x="545" y="69.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="550" y="83.0">192.234.2.0/24</text>
+<text x="681" y="83.0" fill="#000" font-weight="normal">Switch-Comm</text>
+<path d="M500,103.375 H520 V127.75 H545" fill="none" stroke="#999"/>
+<path d="M675,127.75 H695 V105.0 H720" fill="none" stroke="#999"/>
+<rect x="720" y="95.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="725" y="109.0">192.234.3.0/25</text>
+<text x="856" y="109.0" fill="#000" font-weight="normal">Switch-Hangar</text>
+<path d="M675,127.75 H695 V150.5 H720" fill="none" stroke="#999"/>
+<path d="M850,150.5 H870 V131.0 H895" fill="none" stroke="#999"/>
+<rect x="895" y="121.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="900" y="135.0">192.234.3.128/26</text>
+<text x="1031" y="135.0" fill="#000" font-weight="normal">Switch-Bunker</text>
+<path d="M850,150.5 H870 V170.0 H895" fill="none" stroke="#999"/>
+<path d="M1025,170.0 H1045 V157.0 H1070" fill="none" stroke="#999"/>
+<rect x="1070" y="147.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1075" y="161.0">192.234.3.192/27</text>
+<text x="1206" y="161.0" fill="#000" font-weight="normal">Switch-Medic</text>
+<path d="M1025,170.0 H1045 V183.0 H1070" fill="none" stroke="#999"/>
+<rect x="1070" y="173.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1075" y="187.0">192.234.3.224/27</text>
+<text x="1206" y="187.0" fill="#000" font-weight="normal">Switch-Relay</text>
+<rect x="895" y="160.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="900" y="174.0">192.234.3.192/26</text>
+<rect x="720" y="140.5" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="725" y="154.5">192.234.3.128/25</text>
+<rect x="545" y="117.75" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="550" y="131.75">192.234.3.0/24</text>
+<rect x="370" y="93.375" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="375" y="107.375">192.234.2.0/23</text>
+<rect x="195" y="68.1875" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="200" y="82.1875">192.234.0.0/22</text>
+<path d="M150,492.5625 H170 V906.9375 H195" fill="none" stroke="#999"/>
+<path d="M325,906.9375 H345 V798.875 H370" fill="none" stroke="#999"/>
+<path d="M500,798.875 H520 V608.75 H545" fill="none" stroke="#999"/>
+<path d="M675,608.75 H695 V330.875 H720" fill="none" stroke="#999"/>
+<path d="M850,330.875 H870 V231.75 H895" fill="none" stroke="#999"/>
+<path d="M1025,231.75 H1045 V209.0 H1070" fill="none" stroke="#999"/>
+<rect x="1070" y="199.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1075" y="213.0">192.234.4.0/27</text>
+<text x="1206" y="213.0" fill="#000" font-weight="normal">Switch-Garden</text>
+<path d="M1025,231.75 H1045 V254.5 H1070" fill="none" stroke="#999"/>
+<path d="M1200,254.5 H1220 V235.0 H1245" fill="none" stroke="#999"/>
+<rect x="1245" y="225.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1250" y="239.0">192.234.4.32/28</text>
+<text x="1381" y="239.0" fill="#000" font-weight="normal">Switch-Dock</text>
+<path d="M1200,254.5 H1220 V274.0 H1245" fill="none" stroke="#999"/>
+<path d="M1375,274.0 H1395 V261.0 H1420" fill="none" stroke="#999"/>
+<rect x="1420" y="251.0" width="130" height="20" rx="4" fill="#fde2e2" stroke="#d00" stroke-width="2.5"/>
+<text x="1425" y="265.0">192.234.4.48/29</text>
+<text x="1556" y="265.0" fill="#d00" font-weight="bold">Switch-Lab</text>
+<ellipse cx="1526.0" cy="261.0" rx="118.0" ry="16" fill="none" stroke="#d00" stroke-width="2"/>
+<path d="M1375,274.0 H1395 V287.0 H1420" fill="none" stroke="#999"/>
+<rect x="1420" y="277.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1425" y="291.0">192.234.4.56/29</text>
+<text x="1556" y="291.0" fill="#000" font-weight="normal">Switch-Terminal</text>
+<rect x="1245" y="264.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1250" y="278.0">192.234.4.48/28</text>
+<rect x="1070" y="244.5" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1075" y="258.5">192.234.4.32/27</text>
+<rect x="895" y="221.75" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="900" y="235.75">192.234.4.0/26</text>
+<path d="M850,330.875 H870 V430.0 H895" fill="none" stroke="#999"/>
+<path d="M1025,430.0 H1045 V352.0 H1070" fill="none" stroke="#999"/>
+<path d="M1200,352.0 H1220 V326.0 H1245" fill="none" stroke="#999"/>
+<path d="M1375,326.0 H1395 V313.0 H1420" fill="none" stroke="#999"/>
+<rect x="1420" y="303.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1425" y="317.0">192.234.4.64/29</text>
+<text x="1556" y="317.0" fill="#000" font-weight="normal">Switch-Cage</text>
+<path d="M1375,326.0 H1395 V339.0 H1420" fill="none" stroke="#999"/>
+<rect x="1420" y="329.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1425" y="343.0">192.234.4.72/29</text>
+<text x="1556" y="343.0" fill="#000" font-weight="normal">Switch-Dogma</text>
+<rect x="1245" y="316.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1250" y="330.0">192.234.4.64/28</text>
+<path d="M1200,352.0 H1220 V378.0 H1245" fill="none" stroke="#999"/>
+<path d="M1375,378.0 H1395 V365.0 H1420" fill="none" stroke="#999"/>
+<rect x="1420" y="355.0" width="130" height="20" rx="4" fill="#fde2e2" stroke="#d00" stroke-width="2.5"/>
+<text x="1425" y="369.0">192.234.4.80/29</text>
+<text x="1556" y="369.0" fill="#d00" font-weight="bold">Switch-Monolith</text>
+<ellipse cx="1545.0" cy="365.0" rx="137.0" ry="16" fill="none" stroke="#d00" stroke-width="2"/>
+<path d="M1375,378.0 H1395 V391.0 H1420" fill="none" stroke="#999"/>
+<rect x="1420" y="381.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1425" y="395.0">192.234.4.88/29</text>
+<text x="1556" y="395.0" fill="#000" font-weight="normal">Switch-Radar</text>
+<rect x="1245" y="368.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1250" y="382.0">192.234.4.80/28</text>
+<rect x="1070" y="342.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1075" y="356.0">192.234.4.64/27</text>
+<path d="M1025,430.0 H1045 V508.0 H1070" fill="none" stroke="#999"/>
+<path d="M1200,508.0 H1220 V456.0 H1245" fill="none" stroke="#999"/>
+<path d="M1375,456.0 H1395 V430.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,430.0 H1570 V417.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="407.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="421.0">192.234.4.96/30</text>
+<text x="1731" y="421.0" fill="#000" font-weight="normal">Switch-Archive</text>
+<path d="M1550,430.0 H1570 V443.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="433.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="447.0">192.234.4.100/30</text>
+<text x="1731" y="447.0" fill="#000" font-weight="normal">Switch-Intel</text>
+<rect x="1420" y="420.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="434.0">192.234.4.96/29</text>
+<path d="M1375,456.0 H1395 V482.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,482.0 H1570 V469.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="459.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="473.0">192.234.4.104/30</text>
+<text x="1731" y="473.0" fill="#000" font-weight="normal">Switch-Cmd</text>
+<path d="M1550,482.0 H1570 V495.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="485.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="499.0">192.234.4.108/30</text>
+<text x="1731" y="499.0" fill="#000" font-weight="normal">L1 Gendou-Hikari</text>
+<rect x="1420" y="472.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="486.0">192.234.4.104/29</text>
+<rect x="1245" y="446.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1250" y="460.0">192.234.4.96/28</text>
+<path d="M1200,508.0 H1220 V560.0 H1245" fill="none" stroke="#999"/>
+<path d="M1375,560.0 H1395 V534.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,534.0 H1570 V521.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="511.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="525.0">192.234.4.112/30</text>
+<text x="1731" y="525.0" fill="#000" font-weight="normal">L2 Gendou-Yui</text>
+<path d="M1550,534.0 H1570 V547.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="537.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="551.0">192.234.4.116/30</text>
+<text x="1731" y="551.0" fill="#000" font-weight="normal">L3 Yui-Mari</text>
+<rect x="1420" y="524.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="538.0">192.234.4.112/29</text>
+<path d="M1375,560.0 H1395 V586.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,586.0 H1570 V573.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="563.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="577.0">192.234.4.120/30</text>
+<text x="1731" y="577.0" fill="#000" font-weight="normal">L4 Yui-Rei</text>
+<path d="M1550,586.0 H1570 V599.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="589.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="603.0">192.234.4.124/30</text>
+<text x="1731" y="603.0" fill="#000" font-weight="normal">L5 Yui-Shinji</text>
+<rect x="1420" y="576.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="590.0">192.234.4.120/29</text>
+<rect x="1245" y="550.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1250" y="564.0">192.234.4.112/28</text>
+<rect x="1070" y="498.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1075" y="512.0">192.234.4.96/27</text>
+<rect x="895" y="420.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="900" y="434.0">192.234.4.64/26</text>
+<rect x="720" y="320.875" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="725" y="334.875">192.234.4.0/25</text>
+<path d="M675,608.75 H695 V886.625 H720" fill="none" stroke="#999"/>
+<path d="M850,886.625 H870 V810.25 H895" fill="none" stroke="#999"/>
+<path d="M1025,810.25 H1045 V716.0 H1070" fill="none" stroke="#999"/>
+<path d="M1200,716.0 H1220 V664.0 H1245" fill="none" stroke="#999"/>
+<path d="M1375,664.0 H1395 V638.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,638.0 H1570 V625.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="615.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="629.0">192.234.4.128/30</text>
+<text x="1731" y="629.0" fill="#000" font-weight="normal">L6 Asuka-Kensuke</text>
+<path d="M1550,638.0 H1570 V651.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="641.0" width="130" height="20" rx="4" fill="#fde2e2" stroke="#d00" stroke-width="2.5"/>
+<text x="1600" y="655.0">192.234.4.132/30</text>
+<text x="1731" y="655.0" fill="#d00" font-weight="bold">L7 Asuka-Ritsuko</text>
+<ellipse cx="1723.8" cy="651.0" rx="140.8" ry="16" fill="none" stroke="#d00" stroke-width="2"/>
+<rect x="1420" y="628.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="642.0">192.234.4.128/29</text>
+<path d="M1375,664.0 H1395 V690.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,690.0 H1570 V677.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="667.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="681.0">192.234.4.136/30</text>
+<text x="1731" y="681.0" fill="#000" font-weight="normal">L8 Fuyutsuki-Maya</text>
+<path d="M1550,690.0 H1570 V703.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="693.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="707.0">192.234.4.140/30</text>
+<text x="1731" y="707.0" fill="#000" font-weight="normal">L9 Fuyutsuki-Toji</text>
+<rect x="1420" y="680.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="694.0">192.234.4.136/29</text>
+<rect x="1245" y="654.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1250" y="668.0">192.234.4.128/28</text>
+<path d="M1200,716.0 H1220 V768.0 H1245" fill="none" stroke="#999"/>
+<path d="M1375,768.0 H1395 V742.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,742.0 H1570 V729.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="719.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="733.0">192.234.4.144/30</text>
+<text x="1731" y="733.0" fill="#000" font-weight="normal">L10 Hikari-Kaworu</text>
+<path d="M1550,742.0 H1570 V755.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="745.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="759.0">192.234.4.148/30</text>
+<text x="1731" y="759.0" fill="#000" font-weight="normal">L11 Shigeru-Makoto</text>
+<rect x="1420" y="732.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="746.0">192.234.4.144/29</text>
+<path d="M1375,768.0 H1395 V794.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,794.0 H1570 V781.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="771.0" width="130" height="20" rx="4" fill="#fde2e2" stroke="#d00" stroke-width="2.5"/>
+<text x="1600" y="785.0">192.234.4.152/30</text>
+<text x="1731" y="785.0" fill="#d00" font-weight="bold">L12 Gendou-Asuka</text>
+<ellipse cx="1723.8" cy="781.0" rx="140.8" ry="16" fill="none" stroke="#d00" stroke-width="2"/>
+<path d="M1550,794.0 H1570 V807.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="797.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="811.0">192.234.4.156/30</text>
+<text x="1731" y="811.0" fill="#000" font-weight="normal">L13 Gendou-Kaji</text>
+<rect x="1420" y="784.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="798.0">192.234.4.152/29</text>
+<rect x="1245" y="758.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1250" y="772.0">192.234.4.144/28</text>
+<rect x="1070" y="706.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1075" y="720.0">192.234.4.128/27</text>
+<path d="M1025,810.25 H1045 V904.5 H1070" fill="none" stroke="#999"/>
+<path d="M1200,904.5 H1220 V872.0 H1245" fill="none" stroke="#999"/>
+<path d="M1375,872.0 H1395 V846.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,846.0 H1570 V833.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="823.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="837.0">192.234.4.160/30</text>
+<text x="1731" y="837.0" fill="#000" font-weight="normal">L14 Gendou-Misato</text>
+<path d="M1550,846.0 H1570 V859.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="849.0" width="130" height="20" rx="4" fill="#fde2e2" stroke="#d00" stroke-width="2.5"/>
+<text x="1600" y="863.0">192.234.4.164/30</text>
+<text x="1731" y="863.0" fill="#d00" font-weight="bold">L15 Gendou-Shigeru</text>
+<ellipse cx="1731.4" cy="859.0" rx="148.39999999999998" ry="16" fill="none" stroke="#d00" stroke-width="2"/>
+<rect x="1420" y="836.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="850.0">192.234.4.160/29</text>
+<path d="M1375,872.0 H1395 V898.0 H1420" fill="none" stroke="#999"/>
+<path d="M1550,898.0 H1570 V885.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="875.0" width="130" height="20" rx="4" fill="#e8f1fb" stroke="#557" stroke-width="1"/>
+<text x="1600" y="889.0">192.234.4.168/30</text>
+<text x="1731" y="889.0" fill="#000" font-weight="normal">L16 Gendou-Fuyutsuki</text>
+<path d="M1550,898.0 H1570 V911.0 H1595" fill="none" stroke="#999"/>
+<rect x="1595" y="901.0" width="130" height="20" rx="4" fill="#f3f3f3" stroke="#557" stroke-width="1"/>
+<text x="1600" y="915.0">192.234.4.172/30</text>
+<text x="1731" y="915.0" fill="#999" font-weight="normal">(sisa)</text>
+<rect x="1420" y="888.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1425" y="902.0">192.234.4.168/29</text>
+<rect x="1245" y="862.0" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1250" y="876.0">192.234.4.160/28</text>
+<path d="M1200,904.5 H1220 V937.0 H1245" fill="none" stroke="#999"/>
+<rect x="1245" y="927.0" width="130" height="20" rx="4" fill="#f3f3f3" stroke="#557" stroke-width="1"/>
+<text x="1250" y="941.0">192.234.4.176/28</text>
+<text x="1381" y="941.0" fill="#999" font-weight="normal">(sisa)</text>
+<rect x="1070" y="894.5" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="1075" y="908.5">192.234.4.160/27</text>
+<rect x="895" y="800.25" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="900" y="814.25">192.234.4.128/26</text>
+<path d="M850,886.625 H870 V963.0 H895" fill="none" stroke="#999"/>
+<rect x="895" y="953.0" width="130" height="20" rx="4" fill="#f3f3f3" stroke="#557" stroke-width="1"/>
+<text x="900" y="967.0">192.234.4.192/26</text>
+<text x="1031" y="967.0" fill="#999" font-weight="normal">(sisa)</text>
+<rect x="720" y="876.625" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="725" y="890.625">192.234.4.128/25</text>
+<rect x="545" y="598.75" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="550" y="612.75">192.234.4.0/24</text>
+<path d="M500,798.875 H520 V989.0 H545" fill="none" stroke="#999"/>
+<rect x="545" y="979.0" width="130" height="20" rx="4" fill="#f3f3f3" stroke="#557" stroke-width="1"/>
+<text x="550" y="993.0">192.234.5.0/24</text>
+<text x="681" y="993.0" fill="#999" font-weight="normal">(sisa)</text>
+<rect x="370" y="788.875" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="375" y="802.875">192.234.4.0/23</text>
+<path d="M325,906.9375 H345 V1015.0 H370" fill="none" stroke="#999"/>
+<rect x="370" y="1005.0" width="130" height="20" rx="4" fill="#f3f3f3" stroke="#557" stroke-width="1"/>
+<text x="375" y="1019.0">192.234.6.0/23</text>
+<text x="506" y="1019.0" fill="#999" font-weight="normal">(sisa)</text>
+<rect x="195" y="896.9375" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="200" y="910.9375">192.234.4.0/22</text>
+<rect x="20" y="482.5625" width="130" height="20" rx="4" fill="#fff" stroke="#557" stroke-width="1"/>
+<text x="25" y="496.5625">192.234.0.0/21</text>
+</svg>
