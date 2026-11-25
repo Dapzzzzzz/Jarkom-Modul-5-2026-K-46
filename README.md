@@ -784,3 +784,134 @@ Tokyo3-Core     192.234.4.106/30   gw 192.234.4.105  recv 3/3
 Delapan router (Asuka, Kaji, Kaworu, Makoto, Mari, Maya, Ritsuko, Shinji) sempat berstatus stopped di GNS3. Setelah dinyalakan ulang, IP dan rute dari soal 2 dan 3 langsung aktif kembali tanpa konfigurasi ulang. Ini membuktikan konfigurasi di `/etc/network/interfaces` bertahan setelah restart.
 
 <!-- TODO: tambahkan screenshot ip -br dan ping ke gateway di Unit-01 -->
+
+## Soal 7
+**Membangunkan MAGI:** Casper, Balthasar, dan Melchior di Switch-Terminal menunggu diaktifkan. Ritsuko ingin ketiganya melayani dulu, urusan keamanan dibahas nanti. Pasang iptables dan netcat-traditional lewat `/root/<nama>.sh`, lalu nyalakan listener sesuai port di glosarium. Dari Lilith, kirim pesan ke ketiganya dan ke port 5001 Balthasar. Tampilkan pesan yang diterima di tiap node.
+
+### Jawaban dan Penjelasan
+
+Port listener diambil dari tabel layanan di glosarium:
+
+| Node | IP | Port TCP | Script |
+|---|---|---|---|
+| Magi-Casper | `192.234.4.58` | 5000 | `/root/magi-casper.sh` |
+| Magi-Balthasar | `192.234.4.59` | 5000 dan 5001 | `/root/magi-balthasar.sh` |
+| Magi-Melchior | `192.234.4.60` | 5000 | `/root/magi-melchior.sh` |
+
+#### 1. Instalasi
+
+```bash
+export DEBIAN_FRONTEND=noninteractive
+apt-get update -q
+apt-get install -y -q iptables netcat-traditional
+update-alternatives --set nc /bin/nc.traditional
+```
+
+Image MAGI (Debian 13) bawaannya memakai `nc.openbsd`. `update-alternatives --set` mengarahkan perintah `nc` ke `nc.traditional`.
+
+Saat `apt-get update`, repo `trixie-security` ditolak karena signature-nya dibuat setelah batas tanggal keyring di image. Repo utama `trixie` tetap valid, sehingga `iptables 1.8.11-2` dan `netcat-traditional 1.10-50` terpasang dari repo utama.
+
+#### 2. Listener
+
+```bash
+listen() {
+    port=$1
+    pkill -f "nc-listener-$port" 2>/dev/null
+    pkill -f "nc.traditional -v -n -l -p $port" 2>/dev/null
+    : > /root/nc_$port.log
+    setsid sh -c "while true; do nc.traditional -v -n -l -p $port >> /root/nc_$port.log 2>&1; done # nc-listener-$port" \
+        < /dev/null > /dev/null 2>&1 &
+}
+listen 5000
+listen 5001   # hanya di Balthasar
+```
+
+* **`-l -p <port>`** membuka listener TCP di port tersebut.
+* **`-v -n`** mencatat baris `connect to ... from ...` berisi IP pengirim tanpa reverse DNS.
+* **`while true`**: `nc.traditional` berhenti setelah satu koneksi selesai, jadi listener dijalankan ulang dalam loop.
+* **`setsid ... &`** melepas loop dari sesi console agar tetap jalan setelah console ditutup.
+* **`pkill`** di awal menghentikan loop lama, sehingga script aman dijalankan berulang.
+* Pesan yang diterima dicatat di `/root/nc_<port>.log`.
+
+#### 3. Pengirim di `Lilith`
+
+```bash
+send() {
+    echo "$3" | nc -N -w 3 $1 $2
+    echo "$1:$2 exit=$?"
+}
+
+send 192.234.4.58 5000 "Halo Casper dari Lilith (port 5000)"
+send 192.234.4.59 5000 "Halo Balthasar dari Lilith (port 5000)"
+send 192.234.4.59 5001 "Halo Balthasar dari Lilith (port 5001)"
+send 192.234.4.60 5000 "Halo Melchior dari Lilith (port 5000)"
+```
+
+`-N` menutup koneksi setelah pesan terkirim, dan `-w 3` membatasi waktu tunggu koneksi.
+
+Script lengkap ada di `perquest-scripts/soal_7/`.
+
+### Verifikasi
+
+#### 1. Paket dan listener di MAGI
+
+```
+$ dpkg -l iptables netcat-traditional | tail -2
+ii  iptables           1.8.11-2     amd64        administration tools for packet filtering and NAT
+ii  netcat-traditional 1.10-50      amd64        TCP/IP swiss army knife
+
+$ ss -tlnp | grep nc        # Magi-Balthasar
+LISTEN 0      1            0.0.0.0:5000      0.0.0.0:*    users:(("nc.traditional",pid=401,fd=3))
+LISTEN 0      1            0.0.0.0:5001      0.0.0.0:*    users:(("nc.traditional",pid=405,fd=3))
+```
+
+Ketiga node MAGI menampilkan hasil `dpkg -l` yang sama.
+
+#### 2. Pengiriman dari `Lilith`
+
+```
+192.234.4.58:5000 exit=0
+192.234.4.59:5000 exit=0
+192.234.4.59:5001 exit=0
+192.234.4.60:5000 exit=0
+```
+
+#### 3. Pesan yang diterima di tiap node
+
+**Magi-Casper** (`/root/nc_5000.log`):
+
+```
+listening on [any] 5000 ...
+connect to [192.234.4.58] from (UNKNOWN) [192.234.4.74] 37812
+Halo Casper dari Lilith (port 5000)
+listening on [any] 5000 ...
+```
+
+**Magi-Balthasar** (`/root/nc_5000.log` dan `/root/nc_5001.log`):
+
+```
+listening on [any] 5000 ...
+connect to [192.234.4.59] from (UNKNOWN) [192.234.4.74] 58582
+Halo Balthasar dari Lilith (port 5000)
+listening on [any] 5000 ...
+```
+
+```
+listening on [any] 5001 ...
+connect to [192.234.4.59] from (UNKNOWN) [192.234.4.74] 41966
+Halo Balthasar dari Lilith (port 5001)
+listening on [any] 5001 ...
+```
+
+**Magi-Melchior** (`/root/nc_5000.log`):
+
+```
+listening on [any] 5000 ...
+connect to [192.234.4.60] from (UNKNOWN) [192.234.4.74] 54662
+Halo Melchior dari Lilith (port 5000)
+listening on [any] 5000 ...
+```
+
+Setiap pesan tercatat dari `192.234.4.74` (Lilith). Baris `listening on` kedua menunjukkan listener langsung siap menerima koneksi berikutnya.
+
+<!-- TODO: tambahkan screenshot pengiriman dari Lilith dan log di tiap MAGI -->
